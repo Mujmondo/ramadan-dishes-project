@@ -1,0 +1,19 @@
+{
+  "name": "ramadan-dishes-project",
+  "version": "1.0.0",
+  "description": "A nodejs api to search for ramadan dishes given the ingredient, also estimating the cooktime required for a dish according to prayers given a specific day of ramadan and suggest a dish to make with its cooktime given a day.",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "author": "Mujtaba Elfadil",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "hijri-date": "^0.2.2",
+    "nodemon": "^3.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  }
+}
