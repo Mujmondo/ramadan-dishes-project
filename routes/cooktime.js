@@ -2,36 +2,45 @@ const express = require("express");
 
 const router = express.Router();
 
-const dishesApi = require("../utils/dishesApi");
-const dishes = require("../utils/dishes.json");
-const apiRequest = require("../utils/api");
+const dishesCooktime = require("../utils/dishesCooktime");
+const dishes = require("../assets/dishes.json");
+const prayerTimesApi = require("../utils/prayerTimesApi");
 
 router.get("/", (req, res) => {
+  // endpoint request queries
   const dayQuery = req.query.day;
   const ingredientQuery = req.query.ingredient;
-  // Should work on capitalizing search
 
   // filter dishes based on ingredient
-  const filteredDishes = dishes.filter((dish) =>
-    dish.ingredients.includes(req.query.ingredient)
-  );
-
+  const filteredDishes = dishes.filter((dish) => {
+    const ingredients = dish.ingredients.map((ingredient) =>
+      ingredient?.toLowerCase()
+    );
+    return ingredients.includes(ingredientQuery?.toLowerCase());
+  });
   // handling user input errors
   if (!(ingredientQuery && dayQuery)) {
-    throw new Error("provide day & ingredient query params");
-  } else if (!filteredDishes) {
-    throw new Error("No dishes found with the given ingredient");
+    return res
+      .status(400)
+      .json({ error: "provide day & ingredient query params" });
   } else if (dayQuery <= 0 || dayQuery > 30) {
-    throw new Error("given day should be between 1-30");
+    return res.status(400).json({ error: "given day should be between 1-30" });
+  } else if (!filteredDishes) {
+    return res
+      .status(400)
+      .json({ error: "No dishes found with the given ingredient" });
   }
 
-  const prayerTimes = apiRequest();
+  // getting prayertimes object for the given day
+  const prayerTimes = prayerTimesApi();
+
   prayerTimes
     .then(function (times) {
-      const data = dishesApi(times, filteredDishes, dayQuery);
+      // getting dishes with cooktime
+      const data = dishesCooktime(times, filteredDishes, dayQuery);
       res.status(200).json(data);
     })
-    .catch((error) => res.json({ message: error }));
+    .catch((error) => res.status(500).json({ error: error.message }));
 });
 
 module.exports = router;

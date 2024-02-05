@@ -14,3 +14,6 @@ app.use("/suggest", suggestRoute);
 app.listen(port, () => {
   console.log(`listening to requests on port ${port}`);
 });
+
+
+module.exports = app;
